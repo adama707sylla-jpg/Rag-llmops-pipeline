@@ -98,9 +98,20 @@ jobs:
             -e OLLAMA_HOST=localhost \
             -e PYTHONUTF8=1 \
             rag-llmops-api:ci
-          sleep 15
-          curl -f http://localhost:8000/health || (docker logs rag-test && exit 1)
-          docker stop rag-test
+          echo "Waiting for API to start..."
+          for i in $(seq 1 12); do
+            sleep 10
+            echo "Attempt $i/12..."
+            if curl -sf http://localhost:8000/health; then
+              echo "API is up!"
+              docker stop rag-test
+              exit 0
+            fi
+            docker logs rag-test --tail 5
+          done
+          echo "API failed to start after 120s"
+          docker logs rag-test
+          exit 1
 
   # ── Job 3 : Push to GHCR (main only) ───────────────────
   push:
