@@ -5,6 +5,14 @@ from dotenv import load_dotenv
 load_dotenv()
  
 LLM_MODEL = os.getenv("LLM_MODEL", "mistral")
+
+
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "localhost")
+OLLAMA_PORT = os.getenv("OLLAMA_PORT", "11434")
+OLLAMA_URL  = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}"
+
+# Client Ollama pointant vers la bonne URL
+client = ollama.Client(host=OLLAMA_URL)
  
 SYSTEM_PROMPT = """You are a research assistant specialized in machine learning and AI.
 You answer questions based ONLY on the provided research papers context.
@@ -44,7 +52,7 @@ def generate(query: str, papers: list[dict]) -> dict:
     prompt = build_prompt(query, papers)
  
     try:
-        response = ollama.chat(
+        response = client.chat(
             model=LLM_MODEL,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
@@ -52,7 +60,10 @@ def generate(query: str, papers: list[dict]) -> dict:
             ],
         )
         # response est un objet ChatResponse, pas un dict
-        answer = response.message.content
+        if hasattr(response, "message"):
+            answer = response.message.content
+        else:
+            answer = response["message"]["content"]
  
     except ollama.ResponseError as e:
         raise RuntimeError(

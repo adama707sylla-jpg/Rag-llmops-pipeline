@@ -1,0 +1,47 @@
+[
+  {
+    "question": "What is retrieval-augmented generation?",
+    "answer": "Retrieval-Augmented Generation (RAG) is a technique that combines a retrieval system with a language model. The model retrieves relevant documents from a knowledge base before generating an answer, improving factual accuracy.",
+    "contexts": [
+      "Retrieval-Augmented Generation (RAG) is a method that enhances language model outputs by first retrieving relevant documents from an external knowledge base, then using those documents as context for answer generation.",
+      "RAG systems typically consist of a retriever component that searches a vector database and a generator component (an LLM) that produces the final answer based on retrieved passages."
+    ],
+    "ground_truth": "RAG is a technique that combines document retrieval with language model generation to improve factual accuracy of responses."
+  },
+  {
+    "question": "How does Qdrant store vector embeddings?",
+    "answer": "Qdrant stores vector embeddings in collections. Each vector is associated with a payload (metadata) and an ID. Qdrant uses HNSW indexing for fast approximate nearest neighbor search.",
+    "contexts": [
+      "Qdrant is a vector database that organizes embeddings into collections. Each point in a collection has a vector, an optional payload with metadata, and a unique ID.",
+      "Qdrant implements the HNSW (Hierarchical Navigable Small World) algorithm for efficient approximate nearest neighbor search, enabling fast retrieval at scale."
+    ],
+    "ground_truth": "Qdrant stores embeddings as points in collections, each with a vector, payload, and ID, using HNSW indexing for fast search."
+  },
+  {
+    "question": "What is the role of MinIO in the pipeline?",
+    "answer": "MinIO serves as the object storage layer in the pipeline. Raw documents fetched from arXiv are stored in MinIO buckets before being processed, chunked, and ingested into Qdrant.",
+    "contexts": [
+      "MinIO is an S3-compatible object storage solution used in the pipeline to persist raw arXiv paper PDFs and metadata before vectorization.",
+      "The pipeline first uploads documents to MinIO, then a processing step reads from MinIO, generates embeddings, and pushes them to Qdrant for vector search."
+    ],
+    "ground_truth": "MinIO is the object storage layer where raw arXiv papers are stored before being processed and indexed in Qdrant."
+  },
+  {
+    "question": "What LLM is used for answer generation?",
+    "answer": "Mistral is used as the language model for answer generation. It receives the retrieved context chunks and the user query, then produces a coherent answer via the FastAPI /query endpoint.",
+    "contexts": [
+      "The pipeline uses Mistral as its language model. After the retriever fetches relevant chunks from Qdrant, those chunks are passed as context to Mistral to generate the final answer.",
+      "The FastAPI service exposes a /query endpoint that orchestrates retrieval from Qdrant and generation with Mistral, returning structured JSON responses."
+    ],
+    "ground_truth": "Mistral is the LLM used for answer generation, receiving retrieved context and producing answers via the /query endpoint."
+  },
+  {
+    "question": "How are arXiv papers ingested into the system?",
+    "answer": "arXiv papers are fetched via the arXiv API, stored as raw files in MinIO, then chunked and embedded into vectors that are upserted into Qdrant for semantic search.",
+    "contexts": [
+      "The ingestion pipeline queries the arXiv API to download papers, stores them in MinIO, then processes each paper by splitting it into chunks and generating embeddings.",
+      "Each chunk is converted into a vector embedding and upserted into Qdrant with metadata such as the paper title, authors, and arXiv ID stored as payload."
+    ],
+    "ground_truth": "arXiv papers are fetched via API, stored in MinIO, chunked, embedded, and upserted into Qdrant."
+  }
+]

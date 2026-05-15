@@ -34,12 +34,12 @@ services:
     environment:
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
-      - OLLAMA_HOST=host-gateway
+      - OLLAMA_HOST=host.docker.internal
       - OLLAMA_PORT=11434
       - LLM_MODEL=phi3:mini
       - PYTHONUTF8=1
     extra_hosts:
-      - "host-gateway:host-gateway"
+      - "host.docker.internal:host-gateway"
     depends_on:
       - qdrant
       - minio
